@@ -13,6 +13,7 @@ export const ReportForm = () => {
   });
   const [locationError, setLocationError] = useState(null);
   const [reverseGeocodedAddress, setReverseGeocodedAddress] = useState("");  // Almacenará la dirección obtenida
+  const [currentDateTime, setCurrentDateTime] = useState(""); // Estado para la fecha y hora actual
   const apiKey = "pk.6273f17ce79d1c44781c0cdf624ffd5e";  // Tu clave API de LocationIQ
 
   // Función para obtener la ubicación actual
@@ -87,6 +88,12 @@ export const ReportForm = () => {
     }
   }, [currentLocation]);
 
+  // Obtener y mostrar la fecha y hora actual cuando se carga el componente
+  useEffect(() => {
+    const date = new Date().toLocaleString();  // Obtener la fecha y hora actual
+    setCurrentDateTime(date);  // Guardar la fecha y hora en el estado
+  }, []);  // Solo ejecuta este efecto una vez, cuando el componente se monta
+
   // Manejar la selección de una sugerencia de autocompletado
   const handleSuggestionClick = (suggestion) => {
     setManualAddress(suggestion.display_name);
@@ -103,6 +110,7 @@ export const ReportForm = () => {
     const reportData = {
       tipoDeReporte: reportType,
       ubicacion: location,
+      fechaHora: currentDateTime,  // Agregar la fecha y hora actual al reporte
     };
 
     console.log("Reporte enviado:", reportData);
@@ -116,6 +124,16 @@ export const ReportForm = () => {
           <Card.Body>
             <Card.Title>Registrar una Denuncia</Card.Title>
             <Form onSubmit={handleSubmit}>
+              {/* Mostrar la fecha y hora actual */}
+              <Form.Group className="mb-3">
+                <Form.Label>Fecha y Hora del Reporte</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={currentDateTime}
+                  readOnly
+                />
+              </Form.Group>
+
               {/* Selección del tipo de reporte */}
               <Form.Group className="mb-3">
                 <Form.Label>Tipo de Reporte</Form.Label>
