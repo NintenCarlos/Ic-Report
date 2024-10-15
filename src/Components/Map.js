@@ -1,7 +1,38 @@
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
 import { Card, Container } from "react-bootstrap";
 import L from "leaflet";
 import { useEffect, useState } from "react";
+
+// Simulación de reportes existentes
+const existingReports = [
+  {
+    id: 1,
+    lat: 21.899815,
+    lon: -102.248093,
+    address: "Dirección 1",
+    reportType: "Pelea Callejera",
+    dateTime: "2024-10-10 15:30",
+    description: "Aui",
+  },
+  {
+    id: 2,
+    lat: 21.895,
+    lon: -102.249,
+    address: "Dirección 2",
+    reportType: "Accidente Vehicular",
+    dateTime: "2024-10-11 12:00",
+    description: "Descripción del reporte 2",
+  },
+  {
+    id: 3,
+    lat: 21.8436,
+    lon: -102.2602,
+    address: "Dirección 1",
+    reportType: "Pelea Callejera",
+    dateTime: "2024-10-10 15:30",
+    description: "Si",
+  },
+];
 
 export const Map = () => {
   // Marcador Bonito 7u7
@@ -25,14 +56,14 @@ export const Map = () => {
         const { latitude, longitude } = position.coords;
         setPosition([latitude, longitude]);
         fetchAddressFromCoordinates(latitude, longitude); // Llama a la función para obtener la dirección
+        console.log(position)
       },
       (err) => {
         console.error("Error al obtener la ubicación: ", err);
         setError("No se pudo obtener la ubicación.");
       }
     );
-  }, []);
-  // El array vacío hace que se ejecute solo una vez, cuando el componente se monta
+  }, []); // El array vacío hace que se ejecute solo una vez, cuando el componente se monta
 
   const fetchAddressFromCoordinates = async (latitude, longitude) => {
     try {
@@ -41,9 +72,7 @@ export const Map = () => {
       );
 
       if (!response.ok) {
-        throw new Error(
-          `Error de red: ${response.status} ${response.statusText}`
-        );
+        throw new Error(`Error de red: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -76,6 +105,23 @@ export const Map = () => {
               <Marker position={position}>
                 <Popup>{address}</Popup>
               </Marker>
+
+              {/* Muestra los reportes existentes como círculos */}
+              {existingReports.map(report => (
+                <Circle
+                  key={report.id}
+                  center={[report.lat, report.lon]}
+                  radius={200} // Puedes ajustar el radio según sea necesario
+                  pathOptions={{ color: 'purple' }}
+                >
+                  <Popup>
+                    <strong>{report.reportType}</strong><br />
+                    {report.dateTime}<br />
+                    {report.description}<br />
+                    Dirección: {report.address}
+                  </Popup>
+                </Circle>
+              ))}
             </MapContainer>
             <Card.Text>
               {error ? (
